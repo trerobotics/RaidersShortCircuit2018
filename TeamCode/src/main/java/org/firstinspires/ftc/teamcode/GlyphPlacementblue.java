@@ -1,9 +1,10 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode;
 
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
@@ -11,10 +12,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.ClosableVuforiaLocalizer;
-import org.firstinspires.ftc.teamcode.hardware.bots.Robot;
+import org.firstinspires.ftc.teamcode.Robot;
 
-@Autonomous(name="Auto: Red", group ="Concept")
-public class GlyphPlacementRed extends LinearOpMode {
+@Autonomous(name="Auto: Blue vision", group ="Brockbot")
+public class GlyphPlacementblue extends LinearOpMode {
 
 
     private Robot robot = new Robot(telemetry);
@@ -58,55 +59,90 @@ public class GlyphPlacementRed extends LinearOpMode {
             // Load VuMarks. RelicRecoveryVuMark is an Enum that holds the VuMarks for
             // the left, center and right of the cryptobox
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-            vuMark = RelicRecoveryVuMark.RIGHT;
+            vuMark = RelicRecoveryVuMark.CENTER;
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
 
                 // We found an instance of the VuMark. show which one it is for debug purposes.
                 telemetry.addData("VuMark", "%s visible", vuMark);
-                vuforia.close();
+
 
                 cryptoboxDetector = new CryptoboxDetector();
                 cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
 
                 cryptoboxDetector.downScaleFactor = .5;
-                cryptoboxDetector.detectionMode = CryptoboxDetector.CryptoboxDetectionMode.RED;
+                cryptoboxDetector.detectionMode = CryptoboxDetector.CryptoboxDetectionMode.BLUE;
                 cryptoboxDetector.speed = CryptoboxDetector.CryptoboxSpeed.BALANCED;
                 cryptoboxDetector.rotateMat = false;
 
+                cryptoboxDetector.enable();
+
                 switch (vuMark) {
                     case LEFT:
-                        cryptoboxDetector.enable();
+                        vuforia.close();
+
 
                         // Close grabber and raise arm
                         robot.closeArm();
-                        robot.additiveArmMovement(400);
+                        robot.setMode(robot.arm, DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        robot.setMode(robot.arm, DcMotor.RunMode.RUN_USING_ENCODER);
 
+                        robot.arm.setTargetPosition(robot.arm.getCurrentPosition() + 400);
+
+                        robot.setMode(robot.arm, DcMotor.RunMode.RUN_TO_POSITION);
+                        robot.arm.setPower(.3);
+                        while (robot.arm.isBusy())
+                        {
+
+                        }
+                        robot.arm.setPower(0);
                         //robot.findCryptoBox(-0.15f, 0f, 0f, cryptoboxDetector);
                         //robot.alignWithCryptoBox(-.1f, 0, 0, 0, cryptoboxDetector, telemetry);
                         // call functions to place glyph in column
                         break;
                     case CENTER:
-                        cryptoboxDetector.enable();
+                        vuforia.close();
+
 
                         // Close grabber and raise arm
                         robot.closeArm();
-                        robot.additiveArmMovement(400);
-                        robot.imu.getError(0);
-                        //robot.findCryptoBox(-.15f, 0,0, cryptoboxDetector);
+                        robot.setMode(robot.arm, DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        robot.setMode(robot.arm, DcMotor.RunMode.RUN_USING_ENCODER);
+
+                        robot.arm.setTargetPosition(robot.arm.getCurrentPosition() + 400);
+
+                        robot.setMode(robot.arm, DcMotor.RunMode.RUN_TO_POSITION);
+                        robot.arm.setPower(.3);
+                        while (robot.arm.isBusy())
+                        {
+
+                        }
+                        robot.arm.setPower(0);
+                        robot.findCryptoBox(0, -.15f,0, cryptoboxDetector, telemetry);
                         //robot.alignWithCryptoBox(-.1f, 0,0,1, cryptoboxDetector, telemetry);
-                        cryptoboxDetector.disable();
                         break;
                     case RIGHT:
-                        cryptoboxDetector.enable();
+
+                        vuforia.close();
+
 
                         // Close grabber and raise arm
                         robot.closeArm();
-                        robot.additiveArmMovement(400);
+                        robot.setMode(robot.arm, DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        robot.setMode(robot.arm, DcMotor.RunMode.RUN_USING_ENCODER);
+
+                        robot.arm.setTargetPosition(robot.arm.getCurrentPosition() + 400);
+
+                        robot.setMode(robot.arm, DcMotor.RunMode.RUN_TO_POSITION);
+                        robot.arm.setPower(.3);
+                        while (robot.arm.isBusy())
+                        {
+
+                        }
+                        robot.arm.setPower(0);
 
                         // Align with Cryptobox
-                        //robot.findCryptoBox(0, .15f,0, cryptoboxDetector, telemetry);
+                        robot.findCryptoBox(0, -.15f,0, cryptoboxDetector, telemetry);
                         //robot.alignWithCryptoBox(-.1f, 0,0,2, cryptoboxDetector, telemetry);
-                        sleep(10000);
                         cryptoboxDetector.disable();
                         break;
                 }

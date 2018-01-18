@@ -27,54 +27,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.teleop;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.hardware.bots.Robot;
+import org.firstinspires.ftc.teamcode.Robot;
 
 
-@TeleOp(name="TeleOp", group="Brockbot")
-public class TeleOp_1 extends LinearOpMode {
+@TeleOp(name="Armencodertest", group="Brockbot")
+public class ArmEncoderTest extends LinearOpMode {
 
-    /* Declare OpMode members. */
-    Robot robot           = new Robot(telemetry);
-    float leftGamePadJoystickX;
-    float leftGamePadJoystickY;
-
-    float rightGamePadJoystickX;
-    float armY;
-    boolean gamePad2A;
-    boolean gamePad2B;
-
+    Robot robot = new Robot(telemetry);
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+
+        // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            leftGamePadJoystickX = -gamepad1.left_stick_x;
-            leftGamePadJoystickY = -gamepad1.left_stick_y;
-
-            rightGamePadJoystickX = gamepad1.right_stick_x;
-            armY = -gamepad2.left_stick_y;
-            gamePad2A = gamepad2.a;
-            gamePad2B = gamepad2.b;
-
-
-            if(gamePad2A)
-            {
-                robot.closeArm();
-            } else
-            {
-                robot.openArm();
-            }
-
-            robot.stepArmMovement(gamepad2.dpad_up, gamepad2.dpad_down);
-            robot.drive(leftGamePadJoystickX, leftGamePadJoystickY, rightGamePadJoystickX, false, gamepad1.a);
-
-
+            telemetry.addLine().addData("Arm Position", Integer.toString(robot.arm.getCurrentPosition()));
+            telemetry.update();
 
         }
     }

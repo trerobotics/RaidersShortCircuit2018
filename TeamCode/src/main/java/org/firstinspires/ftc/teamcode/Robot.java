@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.hardware.bots;
+package org.firstinspires.ftc.teamcode;
 
 import android.util.Log;
 
@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.hardware.sensors.IMU;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,22 +89,18 @@ public class Robot
             slowSpeedMultiplier = SLOW_SPEED_SCALE;
         } else
         {
-            slowSpeedMultiplier = 0;
+            slowSpeedMultiplier = 1 ;
         }
+        telemetry.addLine().addData("Speed multiply", slowSpeedMultiplier);
+        telemetry.update();
 
         double steer = imu.getError(0) * P_COEF;
 
-        if(keepheading)
-        {
-            telemetry.addLine().addData("offset", steer);
-            telemetry.update();
-        } else
-        {
-            frontRight.setPower((Range.clip(yInput - xInput - zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
-            frontLeft.setPower((Range.clip(yInput + xInput + zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
-            backRight.setPower((Range.clip(yInput + xInput - zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
-            backLeft.setPower((Range.clip(yInput - xInput + zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
-        }
+        frontRight.setPower((Range.clip(yInput - xInput - zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
+        frontLeft.setPower((Range.clip(yInput + xInput + zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
+        backRight.setPower((Range.clip(yInput + xInput - zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
+        backLeft.setPower((Range.clip(yInput - xInput + zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
+
     }
 
     // makes the robot move. Takes in three axis for movement, and a boolean for whether the robot should keep its
