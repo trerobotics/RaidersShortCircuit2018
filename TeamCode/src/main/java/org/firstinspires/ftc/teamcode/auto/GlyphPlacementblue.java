@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
@@ -11,6 +11,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.teamcode.ClosableVuforiaLocalizer;
+import org.firstinspires.ftc.teamcode.hardware.bots.Robot;
+import org.firstinspires.ftc.teamcode.hardware.sensors.IMU;
 
 @Autonomous(name="Auto: Blue", group ="Concept")
 public class GlyphPlacementblue extends LinearOpMode {

@@ -1,18 +1,17 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
+import org.firstinspires.ftc.teamcode.hardware.bots.Robot;
 
 
 @Autonomous(name="simple Auto", group="BrockBot")
 public class SimpleAuto extends LinearOpMode {
 
     /* Declare OpMode members. */
-    Robot         robot   = new Robot(telemetry);   // Use a Pushbot's hardware
+    Robot robot   = new Robot(telemetry);   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
 
     @Override
