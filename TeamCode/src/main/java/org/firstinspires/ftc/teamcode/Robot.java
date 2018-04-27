@@ -37,8 +37,8 @@ public class Robot
     int currArmPos = 0;
 
     // Robot constants
-    private final float P_COEF = .06f;
-    private final float SLOW_SPEED_SCALE = .5f;
+    private final float P_COEF = .01f;
+    private final float SLOW_SPEED_SCALE = .3f;
 
     private List<DcMotor> driveMotors = new ArrayList<>();
     private float maxSpeed = 1f;
@@ -77,29 +77,48 @@ public class Robot
 
 
     //------------------------------------
-    // Robot Driving Functions
-    //------------------------------------
+    // Robot Driving Functions//------------------------------------
 
     // makes the robot move. Takes in three axis for movement, a boolean for whether the robot should keep its
     // current heading, and a boolean for whether the robot should be slowed down
     public void drive(float xInput, float yInput, float zInput, boolean keepheading, boolean slowRobot)
     {
+        boolean isRobotSlow = false;
+
+        if(slowRobot)
+        {
+            isRobotSlow = !isRobotSlow;
+
+        }
+
         float slowSpeedMultiplier;
-        if(slowRobot) {
+        if(isRobotSlow) {
             slowSpeedMultiplier = SLOW_SPEED_SCALE;
         } else
         {
-            slowSpeedMultiplier = 1 ;
+            slowSpeedMultiplier = 1;
         }
         telemetry.addLine().addData("Speed multiply", slowSpeedMultiplier);
-        telemetry.update();
+        telemetry.addLine().addData("Is Robot Slow", isRobotSlow);
 
         double steer = imu.getError(0) * P_COEF;
 
-        frontRight.setPower((Range.clip(yInput - xInput - zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
-        frontLeft.setPower((Range.clip(yInput + xInput + zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
-        backRight.setPower((Range.clip(yInput + xInput - zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
-        backLeft.setPower((Range.clip(yInput - xInput + zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
+        if(keepheading)
+        {
+            frontRight.setPower(Range.clip(yInput - xInput - (zInput + steer), -maxSpeed, maxSpeed));
+            frontLeft.setPower(Range.clip(yInput + xInput + (zInput + steer), -maxSpeed, maxSpeed));
+            backRight.setPower(Range.clip(yInput + xInput - (zInput + steer), -maxSpeed, maxSpeed));
+            backLeft.setPower(Range.clip(yInput - xInput + (zInput + steer), -maxSpeed, maxSpeed));
+
+        } else
+        {
+            frontRight.setPower((Range.clip(yInput - xInput - zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
+            frontLeft.setPower((Range.clip(yInput + xInput + zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
+            backRight.setPower((Range.clip(yInput + xInput - zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
+            backLeft.setPower((Range.clip(yInput - xInput + zInput, -maxSpeed, maxSpeed)) * slowSpeedMultiplier);
+        }
+
+        telemetry.addLine().addData("Steer", steer);
 
     }
 
@@ -112,8 +131,10 @@ public class Robot
 
         if(keepheading)
         {
-            telemetry.addLine().addData("offset", steer);
-            telemetry.update();
+            frontRight.setPower(Range.clip(yInput - xInput - (zInput + steer), -maxSpeed, maxSpeed));
+            frontLeft.setPower(Range.clip(yInput + xInput + (zInput + steer), -maxSpeed, maxSpeed));
+            backRight.setPower(Range.clip(yInput + xInput - (zInput + steer), -maxSpeed, maxSpeed));
+            backLeft.setPower(Range.clip(yInput - xInput + (zInput + steer), -maxSpeed, maxSpeed));
         } else
         {
             frontRight.setPower(Range.clip(yInput - xInput - zInput, -maxSpeed, maxSpeed));
@@ -121,6 +142,8 @@ public class Robot
             backRight.setPower(Range.clip(yInput + xInput - zInput, -maxSpeed, maxSpeed));
             backLeft.setPower(Range.clip(yInput - xInput + zInput, -maxSpeed, maxSpeed));
         }
+
+        telemetry.addLine().addData("Steer", steer);
     }
 
     //------------------------------------------------------
@@ -149,12 +172,12 @@ public class Robot
     public void stepArmMovement(boolean up, boolean down)
     {
 
-        if(down && currArmPos < 0)
+        if(down && currArmPos > 0)
         {
             telemetry.addData("Arm","going down");
             Log.d("arm", "going down");
             absoluteArmMovement(glyphPos[currArmPos--]);
-        } else if(up && currArmPos > 2)
+    } else if(up && currArmPos < 2)
         {
             telemetry.addData("Arm", "going up");
             Log.d("arm", "going down");
@@ -163,6 +186,7 @@ public class Robot
             telemetry.addLine().addData("Arm", "Arm is not moving");
         }
 
+        telemetry.addLine().addData("Arm Position", currArmPos);
         telemetry.update();
     }
 
@@ -175,7 +199,7 @@ public class Robot
         arm.setTargetPosition( newTargetArmPos);
 
         setMode(arm, DcMotor.RunMode.RUN_TO_POSITION);
-        arm.setPower(.3);
+        arm.setPower(.5);
         while (arm.isBusy())
         {
 

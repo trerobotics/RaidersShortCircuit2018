@@ -29,55 +29,56 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 
 
-@TeleOp(name="TeleOp_1", group="Brockbot")
-public class TeleOp_1 extends LinearOpMode {
+@Autonomous(name="Vuforia Test", group="Test Autonomous")
+
+public class testVuforiaAuto extends LinearOpMode {
 
     /* Declare OpMode members. */
-    Robot robot           = new Robot(telemetry);
-    float leftGamePadJoystickX;
-    float leftGamePadJoystickY;
+    private RaiderBot robot = new RaiderBot(telemetry);
+    private Vuforia vuforia = new Vuforia();
+    private ElapsedTime     runtime = new ElapsedTime();
+    private  DogeCvCrypto cryptoDetector = new DogeCvCrypto(hardwareMap.appContext, CameraViewDisplay.getInstance(), robot);
 
-    float rightGamePadJoystickX;
-    float armY;
-    boolean gamePad2A;
-    boolean gamePad2B;
 
     @Override
     public void runOpMode() {
+
+
+        RelicRecoveryVuMark relicRecoveryVuMark;
+
         robot.init(hardwareMap);
+        vuforia.init(hardwareMap, telemetry);
+
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Status", "Ready to run");    //
+        telemetry.update();
+
+        // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        while (opModeIsActive()) {
-            leftGamePadJoystickX = -gamepad1.left_stick_x;
-            leftGamePadJoystickY = -gamepad1.left_stick_y;
 
-            rightGamePadJoystickX = gamepad1.right_stick_x;
-            armY = -gamepad2.left_stick_y;
-            gamePad2A = gamepad2.a;
-            gamePad2B = gamepad2.b;
-
-
-            if(gamePad2A)
-            {
-                robot.closeArm();
-            } else
-            {
-                robot.openArm();
-            }
-
-            //robot.stepArmMovement(gamepad2.dpad_up, gamepad2.dpad_down);
-            robot.arm.setPower(Range.clip(armY, -.2, .3));
-            robot.drive(leftGamePadJoystickX, leftGamePadJoystickY, rightGamePadJoystickX, false, gamepad1.a);
-
-
-
+        while (vuforia.getVuMark() == RelicRecoveryVuMark.UNKNOWN)
+        {
+            telemetry.addData("VuMark", "unknown");
+            telemetry.update();
         }
+        relicRecoveryVuMark = RelicRecoveryVuMark.CENTER;
+
+        vuforia.close();
+
+        cryptoDetector.initialize();
+
+        cryptoDetector.driveToCrypto(.3f, relicRecoveryVuMark);
+
+        robot.rotate(90, .3f);
+
     }
 }
